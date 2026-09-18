@@ -1,0 +1,726 @@
+targetCluster: vseca-pr-data-elastic
+namespace: elastic-stack
+
+fileIndexPost:
+- fileName: files/iteh/vseca-vfgrp-reference-org-names.json
+  indexName: vseca-vfgrp-reference-org-names
+- fileName: files/iteh/vseca-vfgrp-reference-standard-os-names-linux-other.json
+  indexName: vseca-vfgrp-reference-standard-os-names
+- fileName: files/iteh/vseca-vfgrp-reference-standard-os-names-linux-other-2.json
+  indexName: vseca-vfgrp-reference-standard-os-names
+- fileName: files/iteh/vseca-vfgrp-reference-standard-os-names-linux-rhel.json
+  indexName: vseca-vfgrp-reference-standard-os-names
+- fileName: files/iteh/vseca-vfgrp-reference-standard-os-names-linux-rhel-2.json
+  indexName: vseca-vfgrp-reference-standard-os-names
+- fileName: files/iteh/vseca-vfgrp-reference-standard-os-names-linux-sles.json
+  indexName: vseca-vfgrp-reference-standard-os-names
+- fileName: files/iteh/vseca-vfgrp-reference-standard-os-names-mac.json
+  indexName: vseca-vfgrp-reference-standard-os-names
+- fileName: files/iteh/vseca-vfgrp-reference-standard-os-names-others.json
+  indexName: vseca-vfgrp-reference-standard-os-names
+- fileName: files/iteh/vseca-vfgrp-reference-standard-os-names-unix.json
+  indexName: vseca-vfgrp-reference-standard-os-names
+- fileName: files/iteh/vseca-vfgrp-reference-standard-os-names-unrecognised-network-devices.json
+  indexName: vseca-vfgrp-reference-standard-os-names
+- fileName: files/iteh/vseca-vfgrp-reference-standard-os-names-vmware.json
+  indexName: vseca-vfgrp-reference-standard-os-names
+- fileName: files/iteh/vseca-vfgrp-reference-standard-os-names-windows.json
+  indexName: vseca-vfgrp-reference-standard-os-names
+#- fileName: files/iteh/vseca-vfgrp-reference-iteh-agent-os-compatibility.json
+#  indexName: vseca-vfgrp-reference-iteh-agent-os-compatibility
+- fileName: files/iteh/vseca-vfgrp-mandiant-vodafone-domains.json
+  indexName: vseca-vfgrp-mandiant-vodafone-domains
+#- fileName: files/iteh/vseca-vfgrp-reference-vf-domains.json
+#  indexName: vseca-vfgrp-reference-vf-domains
+- fileName: files/iteh/vseca-vfgrp-reference-iteh-nonunique-hosts.json
+  indexName: vseca-vfgrp-reference-iteh-nonunique-hosts
+- fileName: files/iteh/vseca-vfgrp-reference-iteh-dashboard-reporting.json
+  indexName: vseca-vfgrp-reference-iteh-dashboard-reporting
+
+indexTimestamp:
+- vseca-vfgrp-reference-arcsight-critical-assets
+
+logstashPipelines: # refers to pipeline names in vfgrp/vf-grp-vseca-link-01-cicd project
+- vseca-vgvg-arcsight-criticalassets-reference
+
+enrichPolicies:
+- name: enrich-critical-assets-ip-policy
+  schedule:
+  - manual
+- name: vai-record-os-enrichment
+  schedule:
+  - daily
+#  - manual
+- name: enrich-standard-orgs-policy
+  schedule:
+  - daily
+  - manual
+- name: mde-device-tags-by-host-id
+  schedule:
+  - hourly
+#  - manual
+- name: mde-device-tags-by-host-name
+  schedule:
+  - hourly
+#  - manual
+- name: spider-current-host-data
+  schedule:
+  - 12h
+#  - manual
+- name: mcafee-current-host-data
+  schedule:
+  - manual
+- name: pcs-vcloudsmart-current-host-data
+  schedule:
+  - manual
+- name: pcs-vcloudsmart-api-fqdn-current-host-data
+  schedule:
+  - hourly
+- name: pcs-vcloudsmart-api-non-fqdn-current-host-data
+  schedule:
+  - hourly
+- name: pcs-vcloudsmart-api-fqdn-old-host-data
+  schedule:
+  - hourly
+- name: pcs-vcloudsmart-api-non-fqdn-old-host-data
+  schedule:
+  - hourly
+- name: pcs-vcloudsmart-gcp-project-name-data
+  schedule:
+  - daily
+- name: pcs-vcloudsmart-aws-account-id-data
+  schedule:
+  - daily
+- name: sep-current-host-data
+  schedule:
+  - 6h
+- name: tanium-current-host-data
+  schedule:
+  - manual
+- name: trendmicro-current-host-data
+  schedule:
+  - manual
+- name: trendmicro-current-hostname-data
+  schedule:
+  - manual
+- name: mandiant-vftr-current-host-data
+  schedule:
+  - manual
+- name: mdvm-baseline-compliance-configurations
+  schedule:
+#  - manual
+  - daily
+- name: mdvm-baseline-compliance-profiles
+  schedule:
+#  - manual
+  - daily
+- name: mde-secure-config-av-rtp
+  schedule:
+#  - manual
+  - 3h
+- name: mde-secure-config-av-cloud-connectivity
+  schedule:
+#  - manual
+  - 3h
+- name: mde-secure-config-av-definitions-signature
+  schedule:
+#  - manual
+  - 3h
+- name: mde-secure-config-av-status
+  schedule:
+#  - manual
+  - 3h
+- name: mde-secure-config-cloud-delivered-protection
+  schedule:
+#  - manual
+  - 3h
+- name: mde-secure-config-host-firewall
+  schedule:
+#  - manual
+  - 3h
+- name: mde-secure-config-impaired-comms
+  schedule:
+#  - manual
+  - 3h
+#- name: mdvm-software-vulnerability-delta-data
+#  schedule:
+#  - manual
+#  - 6h
+- name: mdvm-software-vulnerability-delta-data-update
+  schedule:
+#  - manual
+  - 6h
+- name: mma-current-host-data
+  schedule:
+#  - manual
+  - hourly
+- name: mde-secure-config-scids
+  schedule:
+#  - manual
+  - 3h
+- name: vf-domain-owners
+  schedule:
+#  - manual
+  - hourly
+- name: iteh-agent-os-compatibility-update
+  schedule:
+#  - manual
+  - daily
+- name: iteh-ehi-current-host-data
+  schedule:
+#  - manual
+  - hourly
+- name: iteh-ehi-current-host-fqdn-data
+  schedule:
+#  - manual
+  - hourly
+- name: iteh-nonunique-hosts-reference-list
+  schedule:
+#  - manual
+  - hourly
+- name: mde-secure-config-compliance-citrix-images
+  schedule:
+#  - manual
+  - daily
+- name: endpoint-health-bau-support-mode-reference
+  schedule:
+#  - manual
+  - 6h
+- name: endpoint-health-asset-information-reference
+  schedule:
+#  - manual
+  - 6h
+- name: endpoint-health-asset-information-reference-hostname
+  schedule:
+#  - manual
+  - 6h
+- name: mdvm-baseline-compliance-summary
+  schedule:
+#  - manual
+  - 6h
+- name: mdvm-baseline-compliance-summary-by-hostname
+  schedule:
+  - 6h
+- name: standard-os-names
+  schedule:
+  - manual
+  - daily
+- name: standard-os-names-match-by-name
+  schedule:
+  - manual
+  - daily
+- name: mde-machines-current-host-data
+  schedule:
+  - hourly
+- name: mdi-ehi-assets-host-data
+  schedule:
+  - daily
+- name: mdi-ehi-assets-ip-data
+  schedule:
+  - daily
+- name: mde-machines-latest-host-data
+  schedule:
+  - hourly
+- name: mde-device-tags-by-host-name-latest
+  schedule:
+  - hourly
+- name: mdvm-baseline-compliance-profile-summary-vic-win11-23h2-mcs2
+  schedule:
+  - 6h
+- name: mdvm-baseline-compliance-profile-summary-vic-win11-22h2-mcs2
+  schedule:
+  - 6h
+- name: mdvm-baseline-compliance-profile-summary-vic-win11-21h2-mcs2
+  schedule:
+  - 6h
+- name: mdvm-baseline-compliance-profile-summary-vic-win10-22h2-mcs2
+  schedule:
+  - 6h
+- name: mdvm-baseline-compliance-profile-summary-vic-win10-21h2-mcs2
+  schedule:
+  - 6h
+- name: mdvm-baseline-compliance-profile-summary-dc-win2022-mcs2
+  schedule:
+  - 6h
+- name: mdvm-baseline-compliance-profile-summary-dc-win2019-mcs2
+  schedule:
+  - 6h
+- name: mdvm-baseline-compliance-profile-summary-dc-win2016-mcs2
+  schedule:
+  - 6h
+- name: mdvm-baseline-compliance-profile-summary-others
+  schedule:
+  - 6h
+- name: mandiant-current-host-data
+  schedule:
+  - hourly
+- name: vf-domain-owners-ehi
+  schedule:
+  - hourly
+- name: mde-secure-config-scids-fqdn
+  schedule:
+  - hourly
+- name: mde-machines-latest-host-data-fqdn
+  schedule:
+  - hourly
+- name: mde-device-tags-by-host-name-latest-fqdn
+  schedule:
+  - hourly
+- name: icms-all-host-data
+  schedule:
+  - 6h
+- name: icms-all-hostname-data
+  schedule:
+  - 6h
+- name: trendmicro-xdr-current-host-data
+  schedule:
+  - hourly
+- name: trendmicro-xdr-current-hostname-data
+  schedule:
+  - hourly
+- name: gcp-project-id-to-names
+  schedule:
+  - daily
+- name: pcs-vcloudsmart-cloud-instance-id-data
+  schedule:
+  - 6h
+- name: microsoft-ah-cloud-assets
+  schedule:
+  - hourly
+- name: mdvm-software-vulnerability-delta-data-recent
+  schedule:
+  - 6h
+- name: mdvm-software-vulnerability-delta-data-historical
+  schedule:
+  - daily
+- name: microsoft-ah-asr-streamline-data-deviceid
+  schedule:
+  - hourly
+- name: qualys-policy-compliance-by-host-name-summary
+  schedule:
+  - hourly
+- name: ithardening-dc-compliance-summary-by-host-name
+  schedule:
+  - hourly
+- name: icms-t0-assets-host-ingested-1d
+  schedule:
+  - daily
+- name: icms-t0-assets-host-ingested-7d
+  schedule:
+  - daily
+- name: icms-t0-assets-fqdn-host-ingested-1d
+  schedule:
+  - daily
+- name: icms-t0-assets-fqdn-host-ingested-7d
+  schedule:
+  - daily
+
+configmaps:
+- name: os-naming
+  filename: OS_naming_vseca_fields.json
+- name: vodafone-ranges
+  filename: vodafone_zones.mmdb
+
+reindexCommands:
+- name: ehi-reindex-iteh-staging
+  schedule:
+  - 1h
+  source:
+    index: vseca-vfgrp-asset-inventory-endpoint-health-inventory
+    _source:
+    - host.name
+    query:
+      match:
+        status: active
+  dest:
+    index: vseca-vgvg-iteh-asset-staging-list
+    pipeline: set-created-time
+  script:
+    source: "ctx._id = ctx._source.host.name"
+- name: asset-inventory-reindex-iteh-staging
+  schedule:
+  - daily
+  source:
+    index:
+    - vseca-vfgrp-asset-inventory-mcafee
+    - vseca-vfgrp-asset-inventory-sep
+    - vseca-vfgrp-asset-inventory-trendmicro
+    - vseca-vfgrp-asset-inventory-tanium
+    - vseca-vfgrp-asset-inventory-oit-spider
+    - vseca-vfgrp-asset-inventory-vftr-mandiant
+    _source:
+    - host.name
+    query:
+      range:
+        event.ingested:
+          gte: now-90d/d # this is to prevent old unreported assets being continously added to the staging index and slowing the process down.
+  dest:
+    index: vseca-vgvg-iteh-asset-staging-list
+    pipeline: set-created-time
+  script:
+    source: "ctx._id = ctx._source.host.name"
+- name: vodacom-mandiant-reindex-iteh-staging
+  schedule:
+  - 1h
+  source:
+    index:
+    - transform-vseca-vgvg-mandiant-hosts
+    _source:
+    - host.name
+    query:
+      range:
+        mandiant.last_poll_timestamp:
+          gte: now-30d/d # this is to prevent old unreported assets being continously added to the staging index and slowing the process down.
+  dest:
+    index: vseca-vgvg-iteh-asset-staging-list
+    pipeline: set-created-time
+  script:
+    source: "ctx._id = ctx._source.host.name"
+- name: mde-sca-reindex-iteh-staging
+  schedule:
+  - 6h
+  source:
+    index:
+    - transform-mde-secure-config-assessment-scid-latest
+    _source:
+    - host.name
+    query:
+      bool:
+        must:
+          - match:
+              event.code: scid-20000
+          - range:
+              microsoft.mde.reportTime:
+                gte: now-90d/d
+  dest:
+    index: vseca-vgvg-iteh-asset-staging-list
+    pipeline: set-created-time
+  script:
+    source: "ctx._id = ctx._source.host.name"
+- name: mma-reindex-iteh-staging
+  schedule:
+  - 6h
+  source:
+    index:
+    - transform-vseca-vgvg-microsoft-mma-heartbeats-latest
+    _source:
+    - host.name
+    query:
+      range:
+        microsoft.mma.report_time:
+          gte: now-90d/d
+  dest:
+    index: vseca-vgvg-iteh-asset-staging-list
+    pipeline: set-created-time
+  script:
+    source: "ctx._id = ctx._source.host.name"
+- name: qualys-reindex-iteh-staging
+  schedule:
+  - 1h
+  source:
+    index:
+    - transform-vseca-vgvg-vf-qualys-posture-pc-data-latest
+    _source:
+    - host.name
+    query:
+      range:
+        qualys.posture.info.evaluation_date:
+          gte: now-90d/d
+  dest:
+    index: vseca-vgvg-iteh-asset-staging-list
+    pipeline: set-created-time
+  script:
+    source: "ctx._id = ctx._source.host.name"
+- name: it-hardening-dc-reindex-iteh-staging
+  schedule:
+  - 6h
+  source:
+    index:
+    - vseca-vgvg-vf-ithardening-data
+    _source:
+    - host.name
+    query:
+      range:
+        event.ingested:
+          gte: now-90d/d
+  dest:
+    index: vseca-vgvg-iteh-asset-staging-list
+    pipeline: set-created-time
+  script:
+    source: "ctx._id = ctx._source.host.name"
+- name: iteh-main-reporting-index
+  schedule:
+  - 6h
+  source:
+    index:
+    - vseca-vgvg-iteh-asset-staging-list
+  dest:
+    index: vseca-vgvg-iteh-assets-main-reporting
+    pipeline: iteh-main-reporting-index-production
+  script:
+    source: "ctx._id = ctx._source.host.name"
+- name: iteh-cloud-reporting-index
+  schedule:
+  - 6h
+  source:
+    index:
+    - vseca-vgvg-iteh-cloud-asset-staging-list
+  dest:
+    index: vseca-vgvg-iteh-assets-cloud-reporting
+    pipeline: iteh-cloud-reporting-index-production
+  script:
+    source: "ctx._id = ctx._source.host.hostname"
+- name: iteh-main-reporting-index-history
+  schedule:
+  - 6h+1
+  source:
+    index:
+    - vseca-vgvg-iteh-assets-main-reporting
+  dest:
+    index: vseca-vgvg-iteh-assets-main-reporting-history
+  script:
+    source: "ctx._id=null"
+- name: iteh-cloud-reporting-index-history
+  schedule:
+  - 6h+1
+  source:
+    index:
+    - vseca-vgvg-iteh-assets-cloud-reporting
+  dest:
+    index: vseca-vgvg-iteh-assets-cloud-reporting-history
+  script:
+    source: "ctx._id=null"
+- name: pcs-inventory-cloud-assets
+  schedule:
+  - 6h
+  source:
+    index:
+    - transform-vseca-vgvg-asset-inventory-vcloudsmart-latest
+    _source:
+    - host.hostname
+    query:
+      bool:
+        must:
+          - range:
+              pcs.vcloudsmart.lastSeen:
+                gte: now-1d/d
+          - exists:
+              field: host.hostname
+  dest:
+    index: vseca-vgvg-iteh-cloud-asset-staging-list
+    pipeline: set-created-time
+  script:
+    source: "ctx._id = ctx._source.host.hostname"
+- name: iteh-central-reporting-cloud-assets-to-staging
+  schedule:
+  - 6h
+  source:
+    index:
+    - vseca-vgvg-iteh-assets-main-reporting
+    _source:
+    - host.hostname
+    query:
+      bool:
+        must:
+          - match:
+              vodafone.vf_asset_information.cloud_asset: true
+          - match:
+              vodafone.vf_iteh_scope.in_scope: true
+          - exists:
+              field: "host.hostname"
+          - regexp:
+              host.hostname: ".*\\..*"
+  dest:
+    index: vseca-vgvg-iteh-cloud-asset-staging-list
+    pipeline: set-created-time
+  script:
+    source: "ctx._id = ctx._source.host.hostname"
+- name: mde-device-tag-cloud-assets-to-staging
+  schedule:
+  - 6h
+  source:
+    index:
+    - transform-mde-device-tags-latest-host
+    _source:
+    - host.hostname
+    query:
+      bool:
+        must:
+          - match:
+              vodafone.vf_asset_information.cloud_asset: true
+          - exists:
+              field: host.hostname
+          - range:
+              lastSeen:
+                gte: now-7d/d
+          - regexp:
+              host.hostname: ".*\\..*"
+  dest:
+    index: vseca-vgvg-iteh-cloud-asset-staging-list
+    pipeline: set-created-time
+  script:
+    source: "ctx._id = ctx._source.host.hostname"
+- name: icms-non-cloud-to-staging-index
+  schedule:
+  - 6h
+  source:
+    index:
+    - vseca-vgvg-asset-inventory-icms
+    _source:
+    - host.name
+    query:
+      bool:
+        should:
+          bool:
+            must:
+              - match:
+                  icms_data.cs_status: "deployed"
+              - range:
+                  icms_data.cs_lastscandate:
+                    gte: now-7d/d
+              - terms:
+                  icms_data.cs_tier2:
+                    - Virtual Server
+                    - Logical Server
+            must_not:
+              - exists:
+                  field: cloud
+          bool:
+            must:
+              - match:
+                  cloud.provider: "oci drcc"
+
+  dest:
+    index: vseca-vgvg-iteh-asset-staging-list
+    pipeline: set-created-time
+  script:
+    source: "ctx._id = ctx._source.host.name"
+- name: icms-cloud-to-staging-index
+  schedule:
+  - 6h
+  source:
+    index:
+    - vseca-vgvg-asset-inventory-icms
+    _source:
+    - host.hostname
+    query:
+      bool:
+        must:
+          - match:
+              icms_data.cs_status: "deployed"
+          - range:
+              icms_data.cs_lastscandate:
+                gte: now-7d/d
+          - terms:
+              icms_data.cs_tier2:
+                - Virtual Server
+                - Logical Server
+          - exists:
+              field: cloud
+        must_not:
+          - match:
+              cloud.provider: "oci drcc"
+  dest:
+    index: vseca-vgvg-iteh-cloud-asset-staging-list
+    pipeline: set-created-time
+  script:
+    source: "ctx._id = ctx._source.host.hostname"
+- name: reindex-mdvm-vuln-high-value-latest
+  schedule:
+  - 6h
+  source:
+    index: transform-vseca-vgvg-mdvm-software-vulnerabilities-highvalue-latest
+  dest:
+    index: transform-vseca-vgvg-mdvm-software-vulnerabilities-highvalue-latest-reindex
+    pipeline: mdvm-vulnerability-status
+  script:
+    source: "ctx._id = ctx._source.microsoft.mdvm.id"
+- name: reindex-mdvm-vuln-macos-latest
+  schedule:
+  - 6h
+  source:
+    index: transform-vseca-vgvg-mdvm-software-vulnerabilities-macos-latest
+  dest:
+    index: transform-vseca-vgvg-mdvm-software-vulnerabilities-macos-latest-reindex
+    pipeline: mdvm-vulnerability-status
+  script:
+    source: "ctx._id = ctx._source.microsoft.mdvm.id"
+- name: reindex-mdvm-vuln-highexploitable-latest
+  schedule:
+  - 6h
+  source:
+    index: transform-vseca-vgvg-mdvm-software-vulnerabilities-highexploitable-latest
+  dest:
+    index: transform-vseca-vgvg-mdvm-software-vulnerabilities-highexploitable-latest-reindex
+    pipeline: mdvm-vulnerability-status
+  script:
+    source: "ctx._id = ctx._source.microsoft.mdvm.id"
+- name: trendmicro-xdr-to-staging-index
+  schedule:
+  - 6h
+  source:
+    index:
+    - vseca-vgvg-trendmicro-xdr-endpoints
+    _source:
+    - host.name
+    query:
+      bool:
+        should:
+          - range:
+              trendmicro.xdr.eppAgent.lastConnectedDateTime:
+                gte: now-30d/d
+          - range:
+              trendmicro.xdr.edrSensor.lastConnectedDateTime:
+                gte: now-30d/d
+        must_not:
+          - exists:
+              field: trendmicro.xdr.eppAgent.virtualMachineDetails.cloudAccountId
+        minimum_should_match: 1
+  dest:
+    index: vseca-vgvg-iteh-asset-staging-list
+    pipeline: set-created-time
+  script:
+    source: "ctx._id = ctx._source.host.name"
+- name: trendmicro-xdr-to-cloud-staging-index
+  schedule:
+  - 6h
+  source:
+    index:
+    - vseca-vgvg-trendmicro-xdr-endpoints
+    _source:
+    - host.hostname
+    query:
+      bool:
+        should:
+          - range:
+              trendmicro.xdr.eppAgent.lastConnectedDateTime:
+                gte: now-30d/d
+          - range:
+              trendmicro.xdr.edrSensor.lastConnectedDateTime:
+                gte: now-30d/d
+        must:
+          - exists:
+              field: trendmicro.xdr.eppAgent.virtualMachineDetails.cloudAccountId
+        minimum_should_match: 1
+  dest:
+    index: vseca-vgvg-iteh-cloud-asset-staging-list
+    pipeline: set-created-time
+  script:
+    source: "ctx._id = ctx._source.host.hostname"
+# - name:  qualys-reindex-iteh-cloud-staging
+#   schedule:
+#   - 6h
+#   source:
+#     index:
+#     - transform-vseca-vgvg-vf-qualys-posture-pc-data-latest
+#     _source:
+#     - host.hostname
+#     query:
+#       range:
+#         qualys.posture.info.evaluation_date:
+#           gte: now-90d/d
+#   dest:
+#     index: vseca-vgvg-iteh-cloud-asset-staging-list
+#     pipeline: set-created-time
+#   script:
+#     source: "ctx._id = ctx._source.host.hostname"
