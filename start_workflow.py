@@ -16,7 +16,8 @@ async def main():
     wid = args.workflow_id or "vseca-elastic-" + datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     result = await client.execute_workflow(VsecaElasticReportingWorkflow.run,
         {"config_path": args.config, "dry_run": not args.execute,
-         "max_parallel_reindexes": int(os.getenv("MAX_PARALLEL_REINDEXES", "3"))},
+         "max_parallel_reindexes": int(os.getenv("MAX_PARALLEL_REINDEXES", "3")),
+         "poll_seconds": int(os.getenv("POLL_SECONDS", "15"))},
         id=wid, task_queue=os.getenv("TEMPORAL_TASK_QUEUE", "vseca-elastic-ops"))
     print(result)
 

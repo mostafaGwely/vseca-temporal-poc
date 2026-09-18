@@ -16,9 +16,11 @@ class ES:
         elif os.getenv("ELASTIC_USERNAME"):
             self.auth = (os.environ["ELASTIC_USERNAME"], os.environ.get("ELASTIC_PASSWORD", ""))
 
-    def request(self, method, path, body=None, params=None, timeout=60):
+    def request(self, method, path, body=None, params=None, timeout=60, allow_404=False):
         r = requests.request(method, self.base + path, headers=self.headers, auth=self.auth,
                              verify=self.verify, json=body, params=params, timeout=timeout)
+        if allow_404 and r.status_code == 404:
+            return r.json() if r.content else {}
         if not r.ok:
             raise RuntimeError(f"Elasticsearch {method} {path} failed: {r.status_code} {r.text[:2000]}")
         return r.json() if r.content else {}

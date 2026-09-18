@@ -77,7 +77,7 @@ secured cluster, set `ELASTIC_API_KEY`, or `ELASTIC_USERNAME`/`ELASTIC_PASSWORD`
 
 ## Change detection
 
-For each policy, the worker retrieves the policy definition, resolves its source indices, and hashes each concrete index's UUID, primary document count, and primary maximum sequence number. A successful fingerprint is stored in `.vseca-temporal-orchestration-state`. Updates can therefore be detected even when document count stays constant. The checkpoint is written only after successful enrich execution.
+For each policy, the worker retrieves the policy definition, resolves its source indices, and hashes each concrete index's UUID, primary document count, deleted count, indexing `index_total`, and store size. A successful fingerprint is stored in `.vseca-temporal-orchestration-state`. Updates can therefore be detected even when document count stays constant. The checkpoint is written only after successful enrich execution.
 
 ## Important POC assumptions
 
@@ -85,6 +85,7 @@ For each policy, the worker retrieves the policy definition, resolves its source
 - Source indices, ingest pipelines, enrich policies, and transforms are created and populated by a separate application; this worker does not provision them.
 - The Elasticsearch identity can read enrich policies and index stats, execute enrich policies/reindexes, read tasks, and write the orchestration state index.
 - The two Stage 2 commands are identified by their current names. The two Stage 3 commands are identified by their current names. Backend-to-staging is identified by the two staging destination indices.
+- Enrich executions are fast, so the Elasticsearch task record may already be gone by the time it is polled. A `404` whose top-level reason is exactly `task [<id>] isn't running and hasn't stored its results` is treated as success for enrich, and the checkpoint is still saved. Any other task error, including other `404`s, fails the run. Reindex task polling never treats a missing task as success.
 - Stage 2 currently waits for all Stage 1 commands, not merely its corresponding main/cloud branch. This is conservative and safe for the first POC.
 - A first execution sees no checkpoint, so every enrich policy is considered changed. Use dry-run first.
 

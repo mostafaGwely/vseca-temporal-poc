@@ -50,7 +50,7 @@ def _fingerprint(es, patterns):
     names = sorted(i["name"] for i in resolved.get("indices", []))
     if not names:
         raise RuntimeError(f"No concrete source indices resolved from: {patterns}")
-    stats = es.request("GET", f"/{','.join(names)}/_stats/docs,seq_no")
+    stats = es.request("GET", f"/{','.join(names)}/_stats/docs,indexing,store")
     snapshot = []
     for name in names:
         s = stats["indices"][name]
@@ -59,7 +59,9 @@ def _fingerprint(es, patterns):
             "index": name,
             "uuid": s.get("uuid"),
             "docs": prim.get("docs", {}).get("count"),
-            "max_seq_no": prim.get("seq_no", {}).get("max_seq_no")
+            "deleted": prim.get("docs", {}).get("deleted"),
+            "index_total": prim.get("indexing", {}).get("index_total"),
+            "size_in_bytes": prim.get("store", {}).get("size_in_bytes")
         })
     raw = json.dumps(snapshot, sort_keys=True, separators=(",", ":"))
     return hashlib.sha256(raw.encode()).hexdigest(), snapshot
@@ -104,7 +106,13 @@ def start_reindex(inp):
 
 @activity.defn
 def check_task(inp):
-    data = ES().request("GET", f"/_tasks/{inp['task_id']}")
+    data = ES().request("GET", f"/_tasks/{inp['task_id']}", allow_404=True)
+    if data.get("status") == 404 or "error" in data:
+        reason = data.get("error", {}).get("reason", "")
+        expected = f"task [{inp['task_id']}] isn't running and hasn't stored its results"
+        if reason == expected and inp.get("allow_gone"):
+            return {"completed": True, "gone": True, "response": {}}
+        raise RuntimeError(f"Elasticsearch task error for {inp['task_id']}: {reason}")
     if not data.get("completed"):
         return {"completed": False}
     if data.get("error"):
