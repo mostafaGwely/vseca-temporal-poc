@@ -3,3 +3,13 @@ services:
     build: .
     env_file: .env
     restart: unless-stopped
+    networks:
+      - default
+      - temporal-network
+      - elk_elk
+
+networks:
+  temporal-network:
+    external: true
+  elk_elk:
+    external: true

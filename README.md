@@ -16,13 +16,16 @@ The starter runs in **dry-run mode by default**. It parses the real plan and per
 
 ## Target stack
 
-This POC talks to the self-hosted Temporal and Elasticsearch stack at `158.220.118.251`:
+This POC talks to the local Dockerized Temporal and Elasticsearch stacks by their container
+names. The worker joins the `temporal-network` and `elk_elk` external networks
+(`docker-compose.yml`) so Docker DNS resolves them:
 
-- Temporal frontend: `158.220.118.251:7233` (no security for now)
-- Temporal UI: `http://158.220.118.251:8080`
-- Elasticsearch: `http://158.220.118.251:9200` (HTTP, security disabled)
+- Temporal frontend: `temporal:7233` (no security for now)
+- Temporal UI: `http://localhost:8080`
+- Elasticsearch: `http://elasticsearch:9200` (HTTP, security disabled)
 
-Connection settings live in `.env` (already created from `.env.example`).
+Connection settings live in `.env` (already created from `.env.example`). To point at a stack
+outside Docker, replace the service names with a reachable host/IP.
 
 > Source indices, ingest pipelines, enrich policies, and transforms are provisioned by a
 > separate application that also loads the data. This worker assumes they already exist and
@@ -34,11 +37,15 @@ Connection settings live in `.env` (already created from `.env.example`).
 
 ## Run with Docker (recommended)
 
-Start the worker:
+Start the worker (optionally several replicas sharing the task queue):
 
 ```bash
 docker compose up --build -d
+docker compose up -d --scale worker=3        # 3 workers
 ```
+
+The external networks `temporal-network` and `elk_elk` must already exist (they belong to your
+local Temporal and ELK compose stacks).
 
 Validate the plan with a dry run:
 
@@ -50,6 +57,29 @@ After validating the plan in the Temporal UI, execute against the cluster:
 
 ```bash
 docker compose run --rm worker python start_workflow.py --config ./elastic-files.yaml --execute
+```
+
+## Schedule recurring runs (every 6 hours)
+
+The worker executes scheduled runs; the schedule lives in Temporal, so no container needs to run on a timer.
+
+Create (or update) the schedule once:
+
+```bash
+docker compose run --rm worker python start_workflow.py --schedule --execute
+```
+
+- Default: cron `0 */6 * * *` (00:00, 06:00, 12:00, 18:00), timezone `UTC`, overlap `SKIP` (a tick is skipped if the previous run is still going).
+- Without `--execute` the schedule would run in dry-run mode, same as a manual run.
+- Override via `--schedule-id`, `--cron`, `--timezone`, or the `SCHEDULE_ID` / `SCHEDULE_CRON` / `SCHEDULE_TIMEZONE` environment variables.
+
+Manage it:
+
+```bash
+docker compose run --rm worker python start_workflow.py --describe    # inspect
+docker compose run --rm worker python start_workflow.py --pause       # stop firing
+docker compose run --rm worker python start_workflow.py --resume      # resume firing
+docker compose run --rm worker python start_workflow.py --delete      # remove
 ```
 
 ## Run locally (alternative)
@@ -97,7 +127,7 @@ Stop the worker:
 docker compose down
 ```
 
-Stop Temporal on the VPS using the same Compose file you used to start it there:
+Stop the local Temporal stack with the Compose file you used to start it (in its own project):
 
 ```bash
 docker compose -f docker-compose-postgres.yml down
