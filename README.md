@@ -82,6 +82,35 @@ docker compose run --rm worker python start_workflow.py --resume      # resume f
 docker compose run --rm worker python start_workflow.py --delete      # remove
 ```
 
+## Trigger from another machine (e.g. a Mac)
+
+To trigger workflows from a Mac while the Temporal and ELK stacks stay on the Docker host,
+use `docker-compose.mac.yml`. It builds the same image but omits the external networks,
+since the trigger only needs to reach the Temporal frontend over its published host port.
+
+```bash
+docker compose -f docker-compose.mac.yml run --rm \
+  -e TEMPORAL_ADDRESS=192.168.1.8:7233 \
+  trigger python start_workflow.py --config ./elastic-files.yaml
+```
+
+- Replace `192.168.1.8` with the Docker host's reachable IP (LAN or Tailscale/VPN).
+- Only the Temporal frontend port (`7233`) must be reachable; Elasticsearch is not needed on
+  the trigger machine.
+- `host.docker.internal` points at the Mac itself, not the Docker host, so use the host IP.
+- Do **not** run `docker compose -f docker-compose.mac.yml up`. The image's default command
+  starts `worker.py`, which would join the shared task queue and fail because `elasticsearch`
+  is not resolvable from the Mac. Use `run` only.
+
+Without Docker, the same trigger can run natively:
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+TEMPORAL_ADDRESS=192.168.1.8:7233 python start_workflow.py --config ./elastic-files.yaml
+```
+
 ## Run locally (alternative)
 
 ```bash

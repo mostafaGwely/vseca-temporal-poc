@@ -1,0 +1,18 @@
+services:
+  trigger:
+    build: .
+    env_file: .env
+
+# Use this file only to trigger workflows from a Mac (or any machine outside the
+# Docker host). It intentionally omits the external `temporal-network` and
+# `elk_elk` networks: the trigger only needs to reach the Temporal frontend over
+# its published host port, not Docker DNS.
+#
+# Example:
+#   docker compose -f docker-compose.mac.yml run --rm \
+#     -e TEMPORAL_ADDRESS=<pc-ip>:7233 \
+#     trigger python start_workflow.py --config ./elastic-files.yaml
+#
+# Do NOT run `docker compose -f docker-compose.mac.yml up`: the default command
+# starts worker.py, which would join the shared task queue and fail because
+# `elasticsearch` is not resolvable from the Mac.
